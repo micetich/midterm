@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Time</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.app {
+    display: flex;
+    flex-direction: column; /* Aligns items vertically */
+    justify-content: flex-start;
+    align-items: center; /* Centers the items */
+    max-width: 1200px;
+    margin: auto;
+}
+
+.form-container, .notes-section {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 20px 0;
+}
+
+.feedback-message {
+    display: none; /* Hidden by default */
+    color: #d8000c;
+    background-color: #ffbaba;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.note-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.note-item p {
+    margin: 0; /* Removes default paragraph margin */
+    flex-grow: 1; /* Allows text to take available space */
+}
+
+.note-actions {
+    display: flex;
+    gap: 10px; /* Space between Edit and Delete buttons */
+}
+
+button {
+    padding: 5px 10px; /* Reduces button size */
+    font-size: 14px; /* Smaller font size for buttons */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+/* Specific button colors */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+input, textarea {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px; /* Adds space below each input/textarea */
+}
+
+label {
+    margin-bottom: 5px;
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="form-container">
+            <h2>TechTime Optimizations</h2>
+            <div id="optimizationsList"></div>
+            <script>
+async function fetchAndDisplayFiles() {
+    try {
+        // Make a request to backend endpoint
+        const response = await fetch('/api/list-cmd-reg-files');
+        if (!response.ok) {
+            throw new Error('Failed to fetch the list of files');
+        }
+        const data = await response.json();
+
+        // Get the container where file links will be displayed
+        const optimizationsList = document.getElementById('optimizationsList');
+        optimizationsList.innerHTML = ''; // Clear existing content
+
+        // Iterate through the list of files and create download links
+        data.files.forEach(file => {
+            // Create a link element for each file
+            const link = document.createElement('a');
+            link.href = `/MainOpt/${file}`; // Construct the URL to the file
+            link.textContent = `Download ${file}`; // Text displayed to the user
+            link.download = file; // link will download the file
+            optimizationsList.appendChild(link); // Add the link to the container
+
+            // Optionally, add a line break for better readability
+            optimizationsList.appendChild(document.createElement('br'));
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        // Optionally, display an error message to the user
+        optimizationsList.textContent = 'Failed to load optimization files.';
+    }
+}
+
+// Call the function when the page has finished loading
+document.addEventListener('DOMContentLoaded', fetchAndDisplayFiles);
+</script>
+
+        </div>
+        <div class="form-container">
+            <h2>Add/Edit Note</h2>
+            <form id="noteForm">
+                <input type="hidden" id="noteId">
+                <div>
+                    <label for="categoryName">Category Name</label>
+                    <input type="text" id="categoryName" required>
+                    <div class="feedback-message" id="feedbackMessage"></div>
+                </div>
+                <div>
+                    <label for="categoryNote">Note</label>
+                    <textarea id="categoryNote" rows="3" required></textarea>
+                    
+                </div>
+                <button type="submit" class="btn-primary">Submit</button>
+                <button type="button" class="btn-primary" onclick="resetForm()">Cancel</button>
+            </form>
+        </div>
+        <div class="notes-section">
+            <h2>Notes</h2>
+            <div id="notesList"></div>
+            
+        </div>
+    </div>
+    <script src="main.js"></script>
+    
+</body>
+
+</html>
